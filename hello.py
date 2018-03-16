@@ -30,18 +30,34 @@ manager.add_command('db', MigrateCommand)
 
 mail = Mail(app)
 
-app.config['SECRET_KEY'] = 'hard to guess string'
+seckey_file = open(r'.\app\seckey.ign')
+seckey = seckey_file.read()
+app.config['SECRET_KEY'] = seckey
 
-app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
-app.config['MAIL_PORT'] = 587
+app.config['MAIL_SERVER'] = 'smtp.mail.yahoo.com'
+app.config['MAIL_PORT'] = 465 #587
 app.config['MAIL_USE_TLS'] = True
 app.config['FLASKY_MAIL_SUBJECT_PREFIX'] = '[Flasky]'
 app.config['FLASKY_MAIL_SENDER'] = 'Flasky Admin <flasky@example.com>'
-app.config['FLASKY_ADMIN'] = os.environ.get('FLASKY_ADMIN')
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+
+admin_file = open(r'.\app\admin.ign')
+flasky_admin = admin_file.read()
+app.config['FLASKY_ADMIN'] = flasky_admin
+
+user_file = open(r'.\app\user.ign')
+mail_user = user_file.read()
+app.config['MAIL_USERNAME'] = mail_user
+
+pwd_file = open(r'.\app\pwd.ign')
+mail_pwd = pwd_file.read()
+app.config['MAIL_PASSWORD'] = mail_pwd
+
 
 #~TODO: Go to Flasky book page 70 and test the SMTP connection.
+"""
+I currently get this error when using any SMTP connection:
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+"""
 
 
 #-----------------------------------------------
@@ -50,9 +66,9 @@ app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
 
 def send_email(to, subject, template, **kwargs):
-    msg = Message(app.config['FLASKY_MAIL_SUBJECT_PREFIX'] + subject,
+    msg = Message( app.config['FLASKY_MAIL_SUBJECT_PREFIX'] + subject,
                   sender=app.config['FLASKY_MAIL_SENDER'], recipients=[to])
-    msg.body = render_template(template + '.txt', **kwargs)
+    msg.body =  'testing testing besting'  #render_template(template + '.txt', **kwargs)
     msg.html = render_template(template + '.html', **kwargs)
     mail.send(msg)
 
